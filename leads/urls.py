@@ -1,6 +1,7 @@
 from django.contrib import admin
-from django.urls import path,include
-from . import views
+from django.urls import path
+from .views import CreateRoomView,RoomView
 urlpatterns = [
-    path('/create',views.CreateRoomView.as_view())
+    path('room',RoomView.as_view()),
+    path('create',CreateRoomView.as_view()),
 ]
