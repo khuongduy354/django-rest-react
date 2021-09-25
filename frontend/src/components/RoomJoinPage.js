@@ -27,7 +27,7 @@ export default class RoomJoinPage extends Component {
         roomCode: this.state.roomCode,
       }),
     };
-    fetch("/api/join-room", requestOptions).then((res) => {
+    fetch("/api/get-room?roomCode=" + this.state.roomCode).then((res) => {
       if (res.ok) {
         this.props.history.push("/room/" + this.state.roomCode);
       } else {

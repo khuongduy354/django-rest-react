@@ -47,12 +47,14 @@ class getRoom(APIView):
             room = Room.objects.filter(code=roomCode)
             if room: 
                 room = RoomSerializer(room[0]).data 
+                self.request.session['roomCode']=roomCode
                 room['isHost'] = room['host'] == self.request.session.session_key
                 return Response(room,status=status.HTTP_200_OK)
             return Response({'Content':'Cant find room'}, status=status.HTTP_404_NOT_FOUND)
         return Response({'content':'bad request'},status=status.HTTP_400_BAD_REQUEST)
 
-
+# join room but actually CHECK room, if it exist go to room page which used the get-room api 
+# which means get-room is join room and joinroom is check if room exist 
 class JoinRoom(APIView):
     lookup_url_kwarg='roomCode'
     def post(self,request,format=None):
@@ -65,3 +67,12 @@ class JoinRoom(APIView):
                 return Response(status=status.HTTP_200_OK)
             return Response({'content':'cant find room'},status=status.HTTP_400_BAD_REQUEST)
         return Response({'content':'cant find key'},status=status.HTTP_400_BAD_REQUEST)
+
+class UserInRoom(APIView):
+    def get(self,request,format=None):
+        if not self.request.session.exists(self.request.session.session_key):
+            self.request.session.create()
+        data = {
+            'roomCode': self.request.session.get('roomCode')
+        }
+        return response.JsonResponse(data, status=status.HTTP_200_OK)
