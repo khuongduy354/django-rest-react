@@ -35,3 +35,19 @@ class CreateRoomView(APIView):
                 room=Room.objects.create(guest_can_pause=guest_can_pause,votes_to_skip=votes_to_skip,host=host)
                 return Response(RoomSerializer(room).data,status=status.HTTP_201_CREATED)
         return Response({'Bad Request':'Invalid data'},status=status.HTTP_400_BAD_REQUEST)
+
+class getRoom(APIView):
+    serializer_class= RoomSerializer
+    look_up_url_kwarg='roomCode'
+    def get(self,request,format=None):
+        if not self.request.session.exists(self.request.session.session_key):
+            self.request.session.create()
+        roomCode=self.request.GET.get(self.look_up_url_kwarg)   
+        if roomCode:
+            room = Room.objects.filter(code=roomCode)
+            if room: 
+                room = RoomSerializer(room[0]).data 
+                room['isHost'] = room['host'] == self.request.session.session_key
+                return Response(room,status=status.HTTP_200_OK)
+            return Response({'Content':'Cant find room'}, status=status.HTTP_404_NOT_FOUND)
+        return Response({'content':'bad request'},status=status.HTTP_400_BAD_REQUEST)

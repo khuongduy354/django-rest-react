@@ -10,108 +10,57 @@ import Radio from "@material-ui/core/Radio";
 import RadioGroup from "@material-ui/core/RadioGroup";
 import FormControlLabel from "@material-ui/core/FormControlLabel";
 
-
 export default class RoomJoinPage extends Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-            guestCanPause: true,
-            votesToSkip: this.defaultVotes,
-        };
-        this.handleVotesChange = this.handleVotesChange.bind(this)
-        this.handleGuestCanPauseChange = this.handleGuestCanPauseChange.bind(this)
-        this.handleRoomButtonPressed = this.handleRoomButtonPressed.bind(this)
-
-    }
-    handleVotesChange(e) {
-        this.setState({
-            votesToSkip: e.target.value,
-        });
-    }
-
-    handleGuestCanPauseChange(e) {
-        this.setState({
-            guestCanPause: e.target.value === "true" ? true : false
-        });
-    }
-
-    handleRoomButtonPressed() {
-        console.log(this.state)
-    }
-
-    render() {
-        return (
-            <Grid container spacing={1}>
-                <Grid item xs={12} align="center">
-                    <Typography component="h4" variant="h4">
-                        Create A Room
-                    </Typography>
-                </Grid>
-
-                <Grid item xs={12} align="center">
-                    <FormControl component="fieldset">
-                        <FormHelperText>
-                            <div align="center">Guest Control of Playback State</div>
-                        </FormHelperText>
-                        {/* guest can pause toggle  */}
-                        <RadioGroup
-                            row
-                            defaultValue="true"
-                            onChange={this.handleGuestCanPauseChange}>
-                            <FormControlLabel
-                                value="true"
-                                control={<Radio color="primary" />}
-                                label="Play/Pause"
-                                labelPlacement="bottom"
-                            />
-                            <FormControlLabel
-                                value="false"
-                                control={<Radio color="secondary" />}
-                                label="No Control"
-                                labelPlacement="bottom"
-                            />
-                        </RadioGroup>
-                    </FormControl>
-                </Grid>
-
-                <Grid item xs={12} align="center">
-                    <FormControl>
-                        {/* update votes to skip */}
-                        <TextField
-                            required={true}
-                            type="number"
-                            onChange={this.handleVotesChange}
-                            defaultValue={this.defaultVotes}
-                            inputProps={{
-                                min: 1,
-                                style: { textAlign: "center" },
-                            }}
-                        />
-                        <FormHelperText>
-                            <div align="center">Votes Required To Skip Song</div>
-                        </FormHelperText>
-                    </FormControl>
-                </Grid>
-
-                <Grid item xs={12} align="center">
-                    <Button
-                        color="primary"
-                        variant="contained"
-                        onClick={this.handleRoomButtonPressed}
-                    >
-                        Create A Room
-                    </Button>
-                </Grid>
-
-                <Grid item xs={12} align="center">
-                    <Button color="secondary" variant="contained" to="/" component={Link}>
-                        Back
-                    </Button>
-                </Grid>
-
-            </Grid>
-        )
-    }
-
-
+  constructor(props) {
+    super(props);
+    this.state = {
+      roomCode: "",
+      error: "",
+    };
+  }
+  roomButtonPressed = () => {
+    //fetch
+  };
+  render() {
+    return (
+      //header
+      //text field
+      //submit
+      //back
+      <Grid container spacing={1}>
+        <Grid item xs={12} align="center">
+          <Typography variant="h4" component="h4">
+            Join a Room
+          </Typography>
+        </Grid>
+        <Grid item xs={12} align="center">
+          <TextField
+            error={this.state.error}
+            label="Code"
+            placeholder="Enter a Room Code"
+            value={this.state.roomCode}
+            helperText={this.state.error}
+            variant="outlined"
+            onChange={(e) => {
+              this.setState({ roomCode: e.target.value });
+            }}
+          />
+        </Grid>
+        <Grid item xs={12} align="center">
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={this.roomButtonPressed}
+          >
+            Enter Room
+          </Button>
+        </Grid>
+        <Grid item xs={12} align="center">
+          <Button variant="contained" color="secondary" to="/" component={Link}>
+            Back
+          </Button>
+        </Grid>
+      </Grid>
+    );
+  }
 }
