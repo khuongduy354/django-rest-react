@@ -51,3 +51,17 @@ class getRoom(APIView):
                 return Response(room,status=status.HTTP_200_OK)
             return Response({'Content':'Cant find room'}, status=status.HTTP_404_NOT_FOUND)
         return Response({'content':'bad request'},status=status.HTTP_400_BAD_REQUEST)
+
+
+class JoinRoom(APIView):
+    lookup_url_kwarg='roomCode'
+    def post(self,request,format=None):
+        if not self.request.session.exists(self.request.session.session_key):
+            self.request.session.create()
+        roomCode= request.data.get('roomCode')
+        if roomCode:
+            queryset= Room.objects.filter(code=roomCode)
+            if queryset: 
+                return Response(status=status.HTTP_200_OK)
+            return Response({'content':'cant find room'},status=status.HTTP_400_BAD_REQUEST)
+        return Response({'content':'cant find key'},status=status.HTTP_400_BAD_REQUEST)
