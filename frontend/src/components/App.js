@@ -61,7 +61,7 @@ export default class App extends Component {
           <Route
             path="/room/:roomCode"
             render={(props) => {
-              return <Room {...props} leaveRoomCallBack={this.clearRoomCode} />;
+              return <Room {...props} />;
             }}
           />
         </Switch>

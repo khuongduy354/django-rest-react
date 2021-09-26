@@ -1,3 +1,4 @@
+from django.db.models import query
 from django.http import response
 from .serializer import CreateRoomSerializer, RoomSerializer
 from rest_framework import generics,status
@@ -44,9 +45,9 @@ class getRoom(APIView):
             self.request.session.create()
         roomCode=self.request.GET.get(self.look_up_url_kwarg)   
         if roomCode:
-            room = Room.objects.filter(code=roomCode)
-            if room: 
-                room = RoomSerializer(room[0]).data 
+            queryset = Room.objects.filter(code=roomCode)
+            if queryset: 
+                room = RoomSerializer(queryset[0]).data 
                 self.request.session['roomCode']=roomCode
                 room['isHost'] = room['host'] == self.request.session.session_key
                 return Response(room,status=status.HTTP_200_OK)
