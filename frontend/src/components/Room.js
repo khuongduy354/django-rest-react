@@ -179,6 +179,7 @@ export default class Room extends Component {
             color="secondary"
             onClick={() => {
               this.setState({ showSetting: false });
+              this.getRoomDetails();
             }}
           >
             Close
