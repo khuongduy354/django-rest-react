@@ -40,7 +40,8 @@ INSTALLED_APPS = [
     'leads.apps.LeadsConfig',
     'reacttest.apps.ReacttestConfig',
     'rest_framework',
-    'frontend.apps.FrontendConfig'
+    'frontend.apps.FrontendConfig',
+    'spotify.apps.SpotifyConfig',
 ]
 
 MIDDLEWARE = [

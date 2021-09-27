@@ -26,7 +26,10 @@ export default class Room extends Component {
 
       erroMsg: "",
       successMsg: "",
+
+      isSpotifyAuth: false,
     };
+    this.getSpotifyAuth = this.getSpotifyAuth.bind(this);
     this.renderSettingButton = this.renderSettingButton.bind(this);
     this.renderSetting = this.renderSetting.bind(this);
     this.roomCode = this.props.match.params.roomCode;
@@ -55,6 +58,23 @@ export default class Room extends Component {
           guestCanPause: data.guest_can_pause,
           isHost: data.isHost,
         });
+        this.state.isHost ? this.getSpotifyAuth() : null;
+      });
+  }
+
+  getSpotifyAuth() {
+    fetch("/spotify/is-spotify-auth")
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.status) {
+          this.setState({
+            isSpotifyAuth: true,
+          });
+        } else {
+          fetch("/spotify/get-auth-url")
+            .then((res) => res.json())
+            .then((data) => window.location.replace(data.url));
+        }
       });
   }
   //2. leave room
