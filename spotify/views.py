@@ -10,17 +10,19 @@ from requests import Request, post
 from rest_framework import status
 from django.utils import timezone
 from datetime import timedelta
+from leads.models import Room
+from django.urls import reverse
 from rest_framework.response import Response
 # from .util import update_or_create_user_tokens, is_spotify_authenticated, get_user_tokens, execute_spotify_api_call
 from .models import SpotifyToken
-from .utils import isSpotifyAuth,getToken,update_or_create_user_tokens,refreshToken
+from .utils import isSpotifyAuth,update_or_create_user_tokens,send_spotify_api_request
 # Create your views here.
 class SpotifyAuth(APIView):
     def get(self,request,format=None):
         scope = 'user-read-playback-state user-modify-playback-state user-read-currently-playing'
         url=Request('GET','https://accounts.spotify.com/authorize',params={
             'scope':scope,
-            'response-type':'code',
+            'response_type':'code',
             'redirect_uri': REDIRECT_URI,
             'client_id': CLIENT_ID
         }).prepare().url
@@ -45,10 +47,45 @@ def spotify_request_token(request):
         request.session.create()
     session_id=request.session.session_key
     update_or_create_user_tokens(session_id=session_id, access_token=access_token,token_type=token_type,refresh_token=refresh_token,expires_in=expires_in) 
-    return HttpResponseRedirect('frontend')
+    return HttpResponseRedirect(reverse('frontend'))
 
 class isSpotifyAuthView(APIView):
     def get(self,request,format=None):
         isAuth=isSpotifyAuth(self.request.session.session_key)
         return Response({'status':isAuth},status=status.HTTP_200_OK)
             
+
+class GetCurrentSong(APIView):
+    def get(self,request,format=None):
+        roomCode=self.request.session.get('roomCode')
+        room = Room.objects.filter(code=roomCode)
+        if room:
+            room=room[0]
+        else:
+            pass #cant find room
+        host=room.host
+        endpoint = "player/currently-playing"
+        response=send_spotify_api_request(host=host,endpoint=endpoint)
+        item = response.get('item')
+        duration = item.get('duration_ms')
+        progress = response.get('progress_ms')
+        album_cover = item.get('album').get('images')[0].get('url')
+        is_playing = response.get('is_playing')
+        song_id = item.get('id')
+        artists=item.get('artists')
+        artists_string=','.join([data.get('name') for (key,data) in enumerate(artists)])
+
+
+        song = {
+            'artists_string':artists_string,
+            'title': item.get('name'),
+            'duration': duration,
+            'time': progress,
+            'image_url': album_cover,
+            'is_playing': is_playing,
+            'votes': 0,
+            'id': song_id
+        }
+
+
+        return Response(song,status=status.HTTP_200_OK)

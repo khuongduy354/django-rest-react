@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import { Link } from "react-router-dom";
 import Alert from "@material-ui/lab/Alert";
+import MusicsPlayer from "./MusicsPlayer";
 import {
   Grid,
   Button,
@@ -14,6 +15,7 @@ import {
   TextField,
 } from "@material-ui/core";
 import { RadioGroup } from "@material-ui/core";
+import MusicPlayer from "./MusicsPlayer";
 
 export default class Room extends Component {
   constructor(props) {
@@ -28,6 +30,7 @@ export default class Room extends Component {
       successMsg: "",
 
       isSpotifyAuth: false,
+      song: {},
     };
     this.getSpotifyAuth = this.getSpotifyAuth.bind(this);
     this.renderSettingButton = this.renderSettingButton.bind(this);
@@ -37,13 +40,18 @@ export default class Room extends Component {
     this.getRoomDetails = this.getRoomDetails.bind(this);
     this.handleUpdateButton = this.handleUpdateButton.bind(this);
     this.renderRoom = this.renderRoom.bind(this);
+    this.getCurrentSong = this.getCurrentSong.bind(this);
+    this.getRoomDetails();
   }
 
   // 1. get detail when loaded
   componentDidMount() {
-    this.getRoomDetails();
+    this.interval = setInterval(this.getCurrentSong, 1000);
   }
 
+  componentWillUnmount() {
+    clearInterval(this.interval);
+  }
   getRoomDetails() {
     fetch("/api/get-room" + "?roomCode=" + this.roomCode)
       .then((response) => {
@@ -62,6 +70,13 @@ export default class Room extends Component {
       });
   }
 
+  getCurrentSong() {
+    fetch("/spotify/get-song")
+      .then((res) => res.json())
+      .then((data) => {
+        this.setState({ song: data });
+      });
+  }
   getSpotifyAuth() {
     fetch("/spotify/is-spotify-auth")
       .then((res) => res.json())
@@ -284,6 +299,7 @@ export default class Room extends Component {
           !this.state.showSetting &&
           this.renderSettingButton()}
         {this.state.showSetting && this.renderSetting()}
+        <MusicsPlayer song={this.state.song} />
         {this.state.showSetting ||
           (() => {
             return (
