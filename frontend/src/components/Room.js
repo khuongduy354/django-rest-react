@@ -299,7 +299,9 @@ export default class Room extends Component {
           !this.state.showSetting &&
           this.renderSettingButton()}
         {this.state.showSetting && this.renderSetting()}
-        <MusicsPlayer song={this.state.song} />
+        <Grid item xs={12} align="center">
+          <MusicsPlayer song={this.state.song} />
+        </Grid>
         {this.state.showSetting ||
           (() => {
             return (
